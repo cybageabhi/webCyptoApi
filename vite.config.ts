@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 export default defineConfig({
+  
   plugins: [
     react(),
     viteStaticCopy({
@@ -16,10 +17,11 @@ export default defineConfig({
   ],
   build: {
     outDir: 'build',
+    sourcemap: true,
     rollupOptions: {
       input: {
         main: './index.html',
       },
     },
-  },
+  }
 });
