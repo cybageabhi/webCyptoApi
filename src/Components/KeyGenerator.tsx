@@ -6,6 +6,7 @@ import GuidService from "../Services/GuidService";
 import AuthService from "../Services/GetAccessToken";
 const KeyGenerator: React.FC = () => {
   const [publicKey, setPublicKey] = useState<string | null>(null);
+  const [privateKey, setPrivateKey] = useState<string | null>(null);
   const [apiResponse, setApiResponse] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -14,10 +15,12 @@ const KeyGenerator: React.FC = () => {
     const generateAndSendKey = async () => {
       try {
         // Generate RSA key pair
-        const { publicKey } = await CryptoService.generateKeys();
+        const { publicKey, privateKey } = await CryptoService.generateKeys();
         setPublicKey(publicKey);
+        setPrivateKey(privateKey); // Store private key
+  
         console.log("Public Key:", publicKey);
-
+        console.log("Private Key:", privateKey); 
         // API parameters
         const secretId = 9681; // Replace with actual value
         const siteId = 0; // Replace with actual value
@@ -29,14 +32,15 @@ const KeyGenerator: React.FC = () => {
         
         console.log("token is "+accessToken);
         
-        const sessionGuid = await GuidService.getSessionGuid(secretId, siteId, launcherTypeId, promptFieldValue,accessToken);;
-        const guid = await GuidService.getSessionGuid(secretId, siteId, launcherTypeId, promptFieldValue,accessToken);
+        const { sessionGuid, guid } = await GuidService.getSessionGuid(secretId, siteId, launcherTypeId, promptFieldValue, accessToken);
+
+        console.log("Session GUID:", sessionGuid);
+        console.log("GUID:", guid);
+        
         const launcherSessionGuid = await LauncherSession.prepareLauncher(secretId, siteId, launcherTypeId, promptFieldValue,accessToken);
        console.log("second call")
         console.log("second call");
-        // Define static GUIDs
 
-        // Send public key to API with updated launcherSessionGuid
         const response = await ApiService.sendPublicKey(publicKey, guid, sessionGuid, launcherSessionGuid,accessToken);
         setApiResponse(response);
         console.log("API Response:", response);

@@ -1,8 +1,9 @@
 import axios from "axios";
-// const API_BASE_URL = "http://localhost:4000/api/v1/launchers/secret";  // ✅ No trailing slash
-const API_BASE_URL ="https://scimtest.secretservercloud.com/api/v1/launchers/secret"
+
+const API_BASE_URL = "https://scimtest.secretservercloud.com/api/v1/launchers/secret";
+
 const GuidService = {
-  async getSessionGuid(secretId: number, siteId: number, launcherTypeId: number, promptFieldValue: string,accessToken:string) {
+  async getSessionGuid(secretId: number, siteId: number, launcherTypeId: number, promptFieldValue: string, accessToken: string) {
     try {
       const requestData = {
         launcherTypeId,
@@ -13,14 +14,19 @@ const GuidService = {
 
       const response = await axios.post(`${API_BASE_URL}`, requestData, {
         headers: {
-            "Authorization": `Bearer ${accessToken}`, 
+          "Authorization": `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
       });
 
       if (response.data.success) {
         console.log("Session GUID Response:", response.data);
-        return response.data.launcherUrl.sessionGuid;
+        
+        // Return both sessionGuid and guid as an object
+        return {
+          sessionGuid: response.data.model.sessionGuid,
+          guid: response.data.model.guid
+        };
       } else {
         throw new Error(response.data.errorMessage || "Failed to get session GUID");
       }
